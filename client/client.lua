@@ -14,23 +14,21 @@ ESX = nil
 Player = nil
 VaultCache = {}
 
+local Bank = {
 
-Citizen.CreateThread(function()
-    while ESX == nil do
-        Citizen.Wait(100)
+    {title="Pacific Bank | Bank Deposit ", colour=2, id=408, scale=1.2, x = 242.629, y = 222.513, z = 106.287},
+  
+    }
 
-        TriggerEvent("esx:getSharedObject", function(library)
-            ESX = library
-        end)
-    end
-end)
-
-
-function DisplayHelpText(str)
-	SetTextComponentFormat("STRING")
-	AddTextComponentString(str)
-	DisplayHelpTextFromStringLabel(0, 0, 1, -1)
-end
+    Citizen.CreateThread(function()
+        while ESX == nil do
+            Citizen.Wait(100)
+    
+            TriggerEvent("esx:getSharedObject", function(library)
+                ESX = library
+            end)
+        end
+    end)
 
 Citizen.CreateThread(function()
 	while true do
@@ -48,39 +46,21 @@ Citizen.CreateThread(function()
                     OnLoad()
 				end
 			end
-		end
-	end
-end)
-
-Citizen.CreateThread(function()
-	while true do
-
-	Citizen.Wait(0)
-
-		local playerPed = PlayerPedId()
-		local coords    = GetEntityCoords(playerPed)
-			
-		if GetDistanceBetweenCoords(coords, 255.044, 227.904, 101.683, true) then
-			DrawMarker(-0, 255.044, 227.904, 101.683, 0.0, 0.0, 0.0, 0, 0.0, 0.0, 0.5, 0.5, 0.5, 255, 0, 0, 100, false, true, 2, false, false, false, false)
-			if GetDistanceBetweenCoords(coords, 255.044, 227.904, 101.683, true) < 1.0 then
+        end
+        
+		if GetDistanceBetweenCoords(coords,256.134,226.562,101.876, true) then
+			DrawMarker(-0, 256.134,226.562,101.876,  0.0, 0.0, 0.0, 0, 0.0, 0.0, 0.5, 0.5, 0.5, 255, 0, 0, 100, false, true, 2, false, false, false, false)
+			if GetDistanceBetweenCoords(coords, 256.134,226.562,101.876,  true) < 0.5 then
                 DisplayHelpText('Premi ~INPUT_PICKUP~ per richiedere l\'apertura del bunker')
                 if IsControlJustReleased(1, 51) then
-                apriporta()
+                  AperturaPorta()
+                  Citizen.Wait(1)
+                  ChiusuraPorta()
                 end
-			end
-		end
-	end
-end)
-
-Citizen.CreateThread(function()
-	while true do
-
-	Citizen.Wait(0)
-
-		local playerPed = PlayerPedId()
-		local coords    = GetEntityCoords(playerPed)
-			
-		if GetDistanceBetweenCoords(coords,265.102, 213.952, 101.688, true) then
+            end
+        end
+        
+        if GetDistanceBetweenCoords(coords,265.102, 213.952, 101.688, true) then
 			DrawMarker(-0, 265.102, 213.952, 101.688, 0.0, 0.0, 0.0, 0, 0.0, 0.0, 0.5, 0.5, 0.5, 255, 0, 0, 100, false, true, 2, false, false, false, false)
 			if GetDistanceBetweenCoords(coords, 265.102, 213.952, 101.688, true) < 1.0 then
                 DisplayHelpText('Premi ~INPUT_PICKUP~ per accedere alla tua Cassetta')
@@ -88,19 +68,9 @@ Citizen.CreateThread(function()
                     OpenVault()
                 end
 			end
-		end
-	end
-end)
-
-Citizen.CreateThread(function()
-	while true do
-
-	Citizen.Wait(0)
-
-		local playerPed = PlayerPedId()
-		local coords    = GetEntityCoords(playerPed)
-			
-		if GetDistanceBetweenCoords(coords, 253.479, 220.738, 106.287, true) then
+        end
+        
+        if GetDistanceBetweenCoords(coords, 253.479, 220.738, 106.287, true) then
 			DrawMarker(-0, 253.479, 220.738, 106.287, 0.0, 0.0, 0.0, 0, 0.0, 0.0, 0.5, 0.5, 0.5, 255, 0, 0, 100, false, true, 2, false, false, false, false)
 			if GetDistanceBetweenCoords(coords, 253.479, 220.738, 106.287, true) < 1.0 then
                 DisplayHelpText('Premi ~INPUT_PICKUP~ per registrare una cassetta di sicurezza')
@@ -108,9 +78,34 @@ Citizen.CreateThread(function()
                     registra()
                 end
 			end
-		end
+        end
+
+        if GetDistanceBetweenCoords(coords,253.226,222.994,101.683, true) then
+			DrawMarker(-0, 253.226,222.994,101.683, 0.0, 0.0, 0.0, 0, 0.0, 0.0, 0.5, 0.5, 0.5, 255, 0, 0, 100, false, true, 2, false, false, false, false)
+			if GetDistanceBetweenCoords(coords, 253.226,222.994,101.683, true) < 0.5 then
+                DisplayHelpText('Premi ~INPUT_PICKUP~ per richiedere l\'apertura del bunker')
+                if IsControlJustReleased(1, 51) then
+                  AperturaPorta()
+                  Citizen.Wait(1)
+                  ChiusuraPorta()
+                end
+            end
+        end
+        
+        for _, info in pairs(Bank) do
+            info.blip = AddBlipForCoord(info.x, info.y, info.z)
+            SetBlipSprite(info.blip, info.id)
+            SetBlipDisplay(info.blip, 4)
+            SetBlipScale(info.blip, info.scale)
+            SetBlipColour(info.blip, info.colour)
+            SetBlipAsShortRange(info.blip, true)
+            BeginTextCommandSetBlipName("STRING")
+            AddTextComponentString(info.title)
+            EndTextCommandSetBlipName(info.blip)
+          end
 	end
 end)
+
 
 function seguimi()
     RequestModel( GetHashKey( "ig_bankman" ) )
@@ -154,30 +149,102 @@ function seguimi()
         DeletePed(ped)
 end
 
+
+function AperturaPorta()
+    local coords = {x,y,z}
+    local obs, distance = ESX.Game.GetClosestObject(doortype, coords)
+
+    SetEntityHeading(obs, 160.0, -0, 85.0, false, true)
+    Citizen.Wait(200)
+    SetEntityHeading(obs, 150.0, -0, 85.0, false, true)
+    Citizen.Wait(200)
+    SetEntityHeading(obs, 140.0, -0, 85.0, false, true)
+    Citizen.Wait(200)
+    SetEntityHeading(obs, 130.0, -0, 85.0, false, true)
+    Citizen.Wait(200)
+    SetEntityHeading(obs, 120.0, -0, 85.0, false, true)
+    Citizen.Wait(200)
+    SetEntityHeading(obs, 110.0, -0, 85.0, false, true)
+    Citizen.Wait(200)
+    SetEntityHeading(obs, 100.0, -0, 85.0, false, true)
+    Citizen.Wait(200)
+    SetEntityHeading(obs, 90.0, -0, 85.0, false, true)
+    Citizen.Wait(200)
+    SetEntityHeading(obs, 80.0, -0, 85.0, false, true)
+    Citizen.Wait(200)
+    SetEntityHeading(obs, 70.0, -0, 85.0, false, true)
+    Citizen.Wait(200)
+    SetEntityHeading(obs, 60.0, -0, 85.0, false, true)
+    Citizen.Wait(200)
+    SetEntityHeading(obs, 50.0, -0, 85.0, false, true)
+    Citizen.Wait(200)
+    SetEntityHeading(obs, 40.0, -0, 85.0, false, true)
+    Citizen.Wait(200)
+    SetEntityHeading(obs, 30.0, -0, 85.0, false, true)
+    Citizen.Wait(200)
+    SetEntityHeading(obs, 20.0, -0, 85.0, false, true)
+    Citizen.Wait(200)
+    SetEntityHeading(obs, 10.0, -0, 85.0, false, true)
+    Citizen.Wait(200)
+    SetEntityHeading(obs, 0.0, -0, 85.0, false, true)
+
+  end
+
+  function ChiusuraPorta()
+    local coords = {x,y,z}
+    local obs, distance = ESX.Game.GetClosestObject(doortype, coords)
+
+    SetEntityHeading(obs, 0.0, -0, 85.0, false, true)
+    Citizen.Wait(300)
+    SetEntityHeading(obs, 10.0, -0, 85.0, false, true)
+    Citizen.Wait(300)
+    SetEntityHeading(obs, 20.0, -0, 85.0, false, true)
+    Citizen.Wait(300)
+    SetEntityHeading(obs, 30.0, -0, 85.0, false, true)
+    Citizen.Wait(300)
+    SetEntityHeading(obs, 40.0, -0, 85.0, false, true)
+    Citizen.Wait(300)
+    SetEntityHeading(obs, 50.0, -0, 85.0, false, true)
+    Citizen.Wait(300)
+    SetEntityHeading(obs, 60.0, -0, 85.0, false, true)
+    Citizen.Wait(300)
+    SetEntityHeading(obs, 70.0, -0, 85.0, false, true)
+    Citizen.Wait(300)
+    SetEntityHeading(obs, 80.0, -0, 85.0, false, true)
+    Citizen.Wait(300)
+    SetEntityHeading(obs, 90.0, -0, 85.0, false, true)
+    Citizen.Wait(300)
+    SetEntityHeading(obs, 100.0, -0, 85.0, false, true)
+    Citizen.Wait(300)
+    SetEntityHeading(obs, 110.0, -0, 85.0, false, true)
+    Citizen.Wait(300)
+    SetEntityHeading(obs, 120.0, -0, 85.0, false, true)
+    Citizen.Wait(300)
+    SetEntityHeading(obs, 130.0, -0, 85.0, false, true)
+    Citizen.Wait(300)
+    SetEntityHeading(obs, 140.0, -0, 85.0, false, true)
+    Citizen.Wait(300)
+    SetEntityHeading(obs, 150.0, -0, 85.0, false, true)
+    Citizen.Wait(300)
+    SetEntityHeading(obs, 160.0, -0, 85.0, false, true)
+
+  end
+
+  function DisplayHelpText(str)
+	SetTextComponentFormat("STRING")
+	AddTextComponentString(str)
+	DisplayHelpTextFromStringLabel(0, 0, 1, -1)
+end
+
 function guardie()
     RequestModel( GetHashKey( "S_M_M_Security_01" ) )
     local ped1 = CreatePed(4, 0xD768B228, 252.41, 217.532, 101.683, true)
     local ped2 = CreatePed(4, 0xD768B228, 258.224, 214.55, 101.683, true)
-    Wait(20000)
+    Wait(40000)
        DeletePed(ped1)
        DeletePed(ped2)
 end
 
-function apriporta()
-    RequestModel( GetHashKey( "S_M_M_Security_01" ) )
-    while ( not HasModelLoaded( GetHashKey( "S_M_M_Security_01" ) ) ) do
-    Citizen.Wait( 1 )
-    end
-    local ped = CreatePed(4, 0xD768B228, 253.303, 222.907, 101.683, true)
-    SetEntityAsMissionEntity(ped)
-    Wait(1000)
-    TaskGoStraightToCoord(ped, 254.139, 225.458, 101.876, 1.0, -1, 238.812, 0.0)
-    Wait(2000)
-    TaskGoStraightToCoord(ped, 255.323, 224.988, 101.876, 1.0, -1, 117.241, 0.0)
-    guardie()
-    Wait(10000)
-        DeletePed(ped)
-end
 
 function registra()
     Player = ESX.GetPlayerData()
@@ -230,6 +297,8 @@ function OnLoad()
 end
 
 function OpenVault()
+    ESX.TriggerServerCallback("Bank.Deposit.FetchCache", function(cache)
+
     local elements = {}
 
     for k, v in pairs(VaultCache) do
@@ -281,6 +350,7 @@ function OpenVault()
         function(data, menu)
             menu.close()
         end)
+    end)
 end
 
 function RetrieveItem(item, itemAmount)
